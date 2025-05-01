@@ -1,0 +1,7 @@
+body { font-family: Arial, sans-serif; margin: 2rem; background:#111; color:#eee;}
+h1 { text-align:center; }
+form label { margin-right:1rem; }
+table { width:100%; margin-top:2rem; border-collapse:collapse;}
+th,td { padding:0.5rem; border-bottom:1px solid #333; text-align:center;}
+#disclaimer { margin-top:3rem; font-size:0.8rem; color:#aaa;}
+button { padding:0.4rem 0.8rem; }

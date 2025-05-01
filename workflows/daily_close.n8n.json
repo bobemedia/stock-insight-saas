@@ -1,0 +1,49 @@
+{
+  "name": "Daily Close Recap",
+  "nodes": [
+    {
+      "id": "cron",
+      "type": "cron",
+      "params": {
+        "schedule": "15 16 * * MON-FRI"
+      }
+    },
+    {
+      "id": "http",
+      "type": "httpRequest",
+      "params": {
+        "url": "https://your-backend/scan?min_price=0&max_price=1000",
+        "method": "GET"
+      }
+    },
+    {
+      "id": "email",
+      "type": "sendEmail",
+      "params": {
+        "to": "{{ $json.user_email }}",
+        "subject": "Daily Close Recap",
+        "html": "{{ $node[\"http\"].json.results }}"
+      }
+    }
+  ],
+  "connections": {
+    "cron": {
+      "main": [
+        [
+          {
+            "node": "http"
+          }
+        ]
+      ]
+    },
+    "http": {
+      "main": [
+        [
+          {
+            "node": "email"
+          }
+        ]
+      ]
+    }
+  }
+}

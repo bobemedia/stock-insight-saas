@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stock Insight SaaS</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Stock Insight SaaS (MVP)</h1>
+
+  <form id="scanForm">
+    <label>Min Price <input type="number" step="0.01" name="min_price" value="0"></label>
+    <label>Max Price <input type="number" step="0.01" name="max_price" value="1000"></label>
+    <label>Min YoY % <input type="number" step="0.1" name="min_yoy" value="-100"></label>
+    <label>Max YoY % <input type="number" step="0.1" name="max_yoy" value="1000"></label>
+    <button type="submit">Run Scan</button>
+  </form>
+
+  <table id="resultsTbl">
+    <thead>
+      <tr><th>Symbol</th><th>Price</th><th>% YoY</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="disclaimer">
+    Information provided is for educational purposes only and does not constitute financial advice.
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
