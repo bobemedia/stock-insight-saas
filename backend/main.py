@@ -41,34 +41,29 @@ def get_summary(symbol:str):
     return r.json()
 
 @app.get("/scan")
-def scan(
+async def scan(
     min_price: float = 0,
     max_price: float = 1_000,
-    min_yoy: float = -100,
+    min_yoy: float = -1_000,
     max_yoy: float = 1_000,
+    exchange: str | None = None,
+    limit: int = 100,
 ):
-    """Very simple scan across BASE_TICKERS (MVP placeholder)"""
-    matches = []
-    for sym in BASE_TICKERS:
-        q = get_quote(sym)
-        price = q.get("c")  # current price
-        if price is None:
-            continue
-        if price < min_price or price > max_price:
-            continue
+    query = """
+        select symbol, last_price as price, pct_yoy
+        from tickers
+        where last_price between $1 and $2
+          and pct_yoy between $3 and $4
+    """
+    params = [min_price, max_price, min_yoy, max_yoy]
+    if exchange:
+        query += " and exchange = $5"
+        params.append(exchange.upper())
+    query += " order by pct_yoy desc limit $6"
+    params.append(limit)
 
-        try:
-            pct_yoy = ((price - q["pc"]) / q["pc"]) * 100  # previous close as rough proxy
-        except ZeroDivisionError:
-            pct_yoy = 0
-        if pct_yoy < min_yoy or pct_yoy > max_yoy:
-            continue
-
-        matches.append(
-            {
-                "symbol": sym,
-                "price": price,
-                "pct_change_yoy": pct_yoy,
-            }
-        )
-    return {"results": matches, "server_time": datetime.datetime.utcnow().isoformat()}
+    conn = await asyncpg.connect(os.getenv("DATABASE_URL"))
+    rows = await conn.fetch(query, *params)
+    await conn.close()
+    return {"results": [dict(r) for r in rows],
+            "server_time": datetime.datetime.utcnow().isoformat()}
